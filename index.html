@@ -13,7 +13,7 @@
     <div class="head-row">
       <a class="logo" href="index.html">STYLE STORE</a>
       <div class="search">브랜드, 상품, 스타일 검색</div>
-      <div class="head-icons"><span>로그인</span><span>마이</span><span>장바구니</span></div>
+      <div class="head-icons" id="headIcons"></div>
     </div>
     <nav class="cat">
       <a href="index.html" class="active">의류</a>
@@ -51,12 +51,17 @@
   </div>
   <h4>사이즈</h4>
   <div class="sizes" id="sizes"></div>
+  <h4>리뷰</h4>
+  <div class="reviews" id="reviews"></div>
   <button class="pay-btn" id="payBtn" disabled>사이즈를 선택해주세요</button>
   <p class="notice">토스페이먼츠 테스트 결제 · 실제 결제되지 않습니다</p>
 </aside>
 
 <script src="https://js.tosspayments.com/v2/standard"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="js/data.js"></script>
+<script src="js/config.js"></script>
+<script src="js/common.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

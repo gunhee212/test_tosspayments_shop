@@ -91,6 +91,59 @@ footer.site b { color: #555; }
 .btn { display: block; height: 52px; line-height: 52px; background: var(--black); color: #fff; font-weight: 800; }
 .hint { margin-top: 18px; background: var(--gray-1); padding: 12px; font-size: 12px; color: #777; text-align: left; line-height: 1.6; }
 
+/* 헤더 링크 */
+.head-icons a { color: inherit; }
+.head-icons a:hover { color: var(--black); text-decoration: underline; }
+
+/* 구매 시트 리뷰 */
+.sheet { max-height: 92vh; overflow-y: auto; }
+.reviews { max-height: 180px; overflow-y: auto; border-top: 1px solid var(--gray-2); }
+.empty { padding: 16px 0; font-size: 13px; color: var(--gray-3); }
+.review { padding: 12px 0; border-bottom: 1px solid var(--gray-1); font-size: 13px; }
+.rv-top { display: flex; justify-content: space-between; gap: 8px; }
+.stars { color: #ffb400; letter-spacing: 1px; }
+.rv-meta { color: var(--gray-3); font-size: 12px; }
+.rv-body { margin: 6px 0; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
+.rv-like { font-size: 12px; color: #777; padding: 2px 0; }
+.rv-like.on { color: var(--red); }
+
+/* 로그인 */
+.auth { max-width: 380px; margin: 64px auto; padding: 0 20px; }
+.auth .logo { display: block; text-align: center; margin-bottom: 28px; }
+.tabs { display: flex; border-bottom: 2px solid var(--gray-2); margin-bottom: 20px; }
+.tabs button { flex: 1; padding: 12px 0; font-weight: 700; color: var(--gray-3); border-bottom: 2px solid transparent; margin-bottom: -2px; }
+.tabs button.active { color: var(--black); border-color: var(--black); }
+[hidden] { display: none !important; }
+.auth label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 14px; }
+.auth input, #modalText { display: block; width: 100%; margin-top: 6px; padding: 12px; border: 1px solid var(--gray-2); font: inherit; font-weight: 400; }
+.auth input:focus, #modalText:focus { outline: 2px solid var(--black); outline-offset: -1px; }
+.auth .btn { width: 100%; font-size: 16px; }
+.btn:disabled, .pay-btn:disabled { opacity: .6; cursor: not-allowed; }
+.form-msg { min-height: 20px; margin: 4px 0 12px; font-size: 13px; color: var(--red); }
+.btn-sub { margin-top: 8px; background: #fff; color: var(--black); border: 1px solid var(--black); height: 50px; line-height: 50px; }
+
+/* 마이 페이지 */
+.my h2 { font-size: 18px; margin: 28px 0 12px; }
+.order { display: flex; gap: 14px; padding: 16px 0; border-bottom: 1px solid var(--gray-2); align-items: flex-start; }
+.o-thumb { width: 64px; height: 80px; flex: none; display: grid; place-items: center; font-size: 30px; }
+.o-main { flex: 1; min-width: 0; }
+.o-status { font-size: 12px; font-weight: 800; }
+.s-paid { color: #0a8f3c; } .s-canceled { color: var(--gray-3); } .s-failed { color: var(--red); } .s-pending { color: var(--blue); }
+.o-name { font-size: 15px; font-weight: 700; margin: 4px 0; }
+.o-meta { font-size: 12px; color: #777; line-height: 1.6; }
+.o-id { word-break: break-all; color: var(--gray-3); }
+.o-actions { display: flex; flex-direction: column; gap: 6px; }
+.o-actions button { padding: 8px 12px; border: 1px solid var(--gray-2); font-size: 12px; white-space: nowrap; }
+.o-actions button.primary { background: var(--black); color: #fff; border-color: var(--black); }
+.liked { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; padding-bottom: 60px; }
+.liked-item { display: flex; gap: 12px; align-items: center; font-size: 13px; line-height: 1.5; }
+.sheet h3 { font-size: 18px; margin-bottom: 6px; }
+.modal-sub { font-size: 13px; color: #777; margin-bottom: 14px; }
+.stars-input { display: flex; gap: 4px; margin-bottom: 10px; }
+.stars-input button { font-size: 28px; color: var(--gray-2); }
+.stars-input button.on { color: #ffb400; }
+#modalText { resize: vertical; margin-bottom: 4px; }
+
 @media (max-width: 900px) { .grid { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 640px) {
   .grid { grid-template-columns: repeat(2, 1fr); gap: 22px 10px; }

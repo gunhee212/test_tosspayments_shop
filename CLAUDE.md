@@ -41,6 +41,26 @@ node server.js          # http://localhost:3000 (PORT 환경변수로 포트 변
 - 브라우저 코드에는 클라이언트 키(`test_ck_*`)만 둡니다. 지금 `CLIENT_KEY`는 토스 공용 테스트 키이므로 실서비스 전에 본인 상점 키로 교체해야 합니다.
 - 금액은 서버에서 상품 정보로 다시 계산해 검증해야 합니다. 지금은 금액을 클라이언트의 `salePrice()`로만 정합니다.
 
+## Supabase 연동 구현 현황
+
+구현 완료: DB 스키마·RLS(`profiles/products/orders/reviews/review_likes/product_likes`), `create_order` RPC, Edge Function `confirm-payment`·`cancel-payment`, `login.html`/`my.html`/`success.html`, `js/common.js`(Supabase 클라이언트·헤더), `js/my.js`. 주문 상태 변경은 서버(service role)만 하고, 금액은 DB 상품 가격으로 계산합니다. **Edge Function secret `TOSS_SECRET_KEY`는 대시보드/CLI에서 직접 등록해야 합니다.** 상품·가격을 바꾸면 `js/data.js`와 DB `products`를 모두 고칩니다.
+
+### 환경설정 파일
+
+- `js/config.js`: 브라우저용 공개 설정(`SUPABASE_URL`, `SUPABASE_KEY`=publishable 키, `CLIENT_KEY`=토스 클라이언트 키). 스크립트 로드 순서는 `supabase-js` CDN → `data.js` → `config.js` → `common.js` → `app.js`/`my.js`입니다. 키를 바꿀 때는 여기만 고칩니다.
+- `supabase/migrations/`: 서버에 적용된 DB 스키마·RLS의 사본입니다. DB를 바꾸면 새 마이그레이션 파일을 추가합니다.
+- `supabase/functions/{confirm-payment,cancel-payment}/index.ts`: Edge Function 소스의 사본입니다. 코드를 고치면 Supabase에 다시 배포해야 반영됩니다.
+- `supabase/config.toml`: 프로젝트 ref와 함수별 `verify_jwt` 설정.
+- `.env.example`: 서버 비밀 값(`TOSS_SECRET_KEY`) 예시입니다. 실제 값은 `.env`(gitignore)나 Supabase secrets에만 둡니다. 브라우저 코드·`js/config.js`에는 시크릿 키를 넣지 않습니다.
+
+## Supabase 연동 (원래 계획)
+
+- 기능 요구사항과 구현 순서는 `PRD.md`가 기준입니다. 범위: 가입/로그인, 로그인 필수 구매, 내 주문 내역, 취소(환불), 리뷰, 좋아요.
+- 프로젝트: `tosspayments-shop` (ref `wguagqycggjqnvxjgktz`, 리전 `ap-northeast-2`, 조직 `gunhee212's Org`, 무료 플랜).
+- MCP가 두 개 있습니다. `plugin:supabase:supabase`는 OAuth 인증이 필요해서 지금은 쓰지 않고, 별도로 연결된 Supabase 커넥터(`list_projects`, `execute_sql`, `apply_migration` 등)가 정상 동작합니다.
+- 프로젝트 생성은 `get_cost` → `confirm_cost` → `create_project(confirm_cost_id)` 순서가 필요합니다. (비용이 $0이어도 필요)
+- 브라우저 코드에는 publishable(anon) 키만 두고, 토스 시크릿 키는 Edge Function의 secrets에만 둡니다.
+
 ## 참고
 
 - `serve.ps1`은 Node 설치 전에 쓰던 PowerShell 서버로, 지금은 쓰지 않으며 gitignore 처리돼 있습니다.

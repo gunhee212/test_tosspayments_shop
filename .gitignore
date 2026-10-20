@@ -1,3 +1,12 @@
-﻿serve.ps1
+serve.ps1
 .claude/
+.claude.local.md
 
+# 비밀 값
+.env
+.env.*
+!.env.example
+
+# Supabase CLI 로컬 상태
+supabase/.temp/
+supabase/.branches/

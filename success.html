@@ -3,21 +3,47 @@
 <title>결제 완료 | STYLE STORE</title><link rel="stylesheet" href="css/style.css"></head>
 <body>
 <div class="result">
-  <div class="mark">✅</div>
-  <h1>결제 인증이 완료되었어요</h1>
-  <p class="sub">토스페이먼츠 결제창에서 인증이 정상 처리되었습니다.</p>
+  <div class="mark" id="mark">⏳</div>
+  <h1 id="title">결제를 승인하는 중이에요</h1>
+  <p class="sub" id="sub">잠시만 기다려주세요.</p>
   <dl>
     <div><dt>주문번호</dt><dd id="orderId"></dd></div>
     <div><dt>결제 금액</dt><dd id="amount"></dd></div>
-    <div><dt>paymentKey</dt><dd id="paymentKey"></dd></div>
+    <div><dt>상태</dt><dd id="status">승인 중</dd></div>
   </dl>
-  <a class="btn" href="index.html">쇼핑 계속하기</a>
-  <p class="hint">※ 퍼블리싱 데모입니다. 실제 결제 승인은 서버에서 시크릿 키로 결제 승인 API(<code>POST /v1/payments/confirm</code>)를 호출해야 완료됩니다.</p>
+  <a class="btn" href="my.html">내 주문 보기</a>
+  <a class="btn btn-sub" href="index.html">쇼핑 계속하기</a>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/common.js"></script>
 <script>
   const q = new URLSearchParams(location.search);
-  document.getElementById('orderId').textContent = q.get('orderId') || '-';
-  document.getElementById('amount').textContent = Number(q.get('amount') || 0).toLocaleString('ko-KR') + '원';
-  document.getElementById('paymentKey').textContent = q.get('paymentKey') || '-';
+  const $ = (id) => document.getElementById(id);
+  const orderId = q.get('orderId');
+  const paymentKey = q.get('paymentKey');
+  const amount = Number(q.get('amount'));
+  $('orderId').textContent = orderId || '-';
+  $('amount').textContent = amount.toLocaleString('ko-KR') + '원';
+
+  function fail(message) {
+    $('mark').textContent = '⚠️';
+    $('title').textContent = '결제 승인에 실패했어요';
+    $('sub').textContent = message;
+    $('status').textContent = '실패';
+  }
+
+  (async () => {
+    await ready;
+    if (!me) return (location.href = loginUrl());
+    if (!orderId || !paymentKey) return fail('결제 정보가 올바르지 않아요.');
+    // 금액 검증과 토스 승인은 서버(Edge Function)가 합니다.
+    const { error } = await sb.functions.invoke('confirm-payment', { body: { paymentKey, orderId, amount } });
+    if (error) return fail(await fnError(error));
+    $('mark').textContent = '✅';
+    $('title').textContent = '결제가 완료되었어요';
+    $('sub').textContent = '토스페이먼츠 결제 승인이 정상 처리되었습니다.';
+    $('status').textContent = '결제 완료';
+  })();
 </script>
 </body></html>

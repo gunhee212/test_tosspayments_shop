@@ -1,5 +1,3 @@
-// 토스페이먼츠 결제창 SDK v2 (테스트 클라이언트 키)
-const CLIENT_KEY = 'test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq';
 
 const category = document.body.dataset.category;
 const grid = document.getElementById('grid');
@@ -7,6 +5,7 @@ const sheet = document.getElementById('sheet');
 const dim = document.getElementById('dim');
 let current = null; // { product, size }
 let sort = 'popular';
+let likedProducts = new Set();
 
 /* ---------- 목록 ---------- */
 function renderGrid() {
@@ -22,7 +21,7 @@ function renderGrid() {
       <div class="thumb" style="background:${p.color}">
         <span class="rank">${i + 1}</span>
         <span class="emoji">${p.icon}</span>
-        <button class="heart" aria-label="좋아요">♡</button>
+        <button class="heart${likedProducts.has(p.id) ? ' on' : ''}" aria-label="좋아요">${likedProducts.has(p.id) ? '♥' : '♡'}</button>
       </div>
       <div class="info">
         <p class="brand">${p.brand}</p>
@@ -34,11 +33,22 @@ function renderGrid() {
     .join('');
 }
 
-grid.addEventListener('click', (e) => {
+grid.addEventListener('click', async (e) => {
   if (e.target.closest('.heart')) {
     const h = e.target.closest('.heart');
-    h.classList.toggle('on');
-    h.textContent = h.classList.contains('on') ? '♥' : '♡';
+    if (!me) {
+      location.href = loginUrl();
+      return;
+    }
+    const id = h.closest('.card').dataset.id;
+    const on = !likedProducts.has(id);
+    const { error } = on
+      ? await sb.from('product_likes').insert({ user_id: me.id, product_id: id })
+      : await sb.from('product_likes').delete().eq('user_id', me.id).eq('product_id', id);
+    if (error) return alert('좋아요 처리에 실패했어요: ' + error.message);
+    on ? likedProducts.add(id) : likedProducts.delete(id);
+    h.classList.toggle('on', on);
+    h.textContent = on ? '♥' : '♡';
     return;
   }
   const card = e.target.closest('.card');
@@ -70,6 +80,7 @@ function openSheet(id) {
     .join('');
   document.getElementById('payBtn').textContent = '사이즈를 선택해주세요';
   document.getElementById('payBtn').disabled = true;
+  loadReviews(p.id);
   sheet.classList.add('open');
   dim.classList.add('open');
   document.body.classList.add('lock');
@@ -95,32 +106,99 @@ document.getElementById('sizes').addEventListener('click', (e) => {
   btn.textContent = `${won(salePrice(current.product))}원 바로 구매하기`;
 });
 
+/* ---------- 리뷰 ---------- */
+async function loadReviews(productId) {
+  const box = document.getElementById('reviews');
+  box.innerHTML = '<p class="empty">불러오는 중…</p>';
+  const { data, error } = await sb
+    .from('reviews')
+    .select('id, user_id, author_name, rating, content, created_at, review_likes(user_id)')
+    .eq('product_id', productId)
+    .order('created_at', { ascending: false });
+  if (!current || current.product.id !== productId) return; // 그새 다른 상품을 열었으면 무시
+  if (error) {
+    box.innerHTML = '<p class="empty">리뷰를 불러오지 못했어요.</p>';
+    return;
+  }
+  if (!data.length) {
+    box.innerHTML = '<p class="empty">아직 리뷰가 없어요.</p>';
+    return;
+  }
+  box.innerHTML = data
+    .map((r) => {
+      const liked = me && r.review_likes.some((l) => l.user_id === me.id);
+      return `<div class="review" data-id="${r.id}">
+        <div class="rv-top"><span class="stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
+          <span class="rv-meta">${esc(r.author_name || '익명')} · ${esc(new Date(r.created_at).toLocaleDateString('ko-KR'))}</span></div>
+        <p class="rv-body">${esc(r.content)}</p>
+        <button class="rv-like${liked ? ' on' : ''}" type="button">${liked ? '♥' : '♡'} ${r.review_likes.length}</button>
+      </div>`;
+    })
+    .join('');
+}
+
+document.getElementById('reviews').addEventListener('click', async (e) => {
+  const b = e.target.closest('.rv-like');
+  if (!b) return;
+  if (!me) {
+    location.href = loginUrl();
+    return;
+  }
+  const id = Number(b.closest('.review').dataset.id);
+  const { error } = b.classList.contains('on')
+    ? await sb.from('review_likes').delete().eq('user_id', me.id).eq('review_id', id)
+    : await sb.from('review_likes').insert({ user_id: me.id, review_id: id });
+  if (error) return alert('좋아요 처리에 실패했어요: ' + error.message);
+  loadReviews(current.product.id);
+});
+
 /* ---------- 토스페이먼츠 결제 ---------- */
 document.getElementById('payBtn').addEventListener('click', async () => {
   if (!current || !current.size) return;
+  if (!me) {
+    location.href = loginUrl();
+    return;
+  }
   if (location.protocol === 'file:') {
-    alert('결제는 http(s) 주소에서만 동작합니다.\n로컬 서버로 실행해주세요. (예: npx serve .)');
+    alert('결제는 http(s) 주소에서만 동작합니다.\n로컬 서버로 실행해주세요. (예: node server.js)');
     return;
   }
   const { product, size } = current;
-  const orderId = 'ORD-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
-  const base = location.href.replace(/[^/]*$/, '');
+  const btn = document.getElementById('payBtn');
+  btn.disabled = true;
   try {
+    // 주문을 먼저 '결제 대기'로 저장합니다. 금액은 DB 가격으로 서버가 계산합니다.
+    const { data, error } = await sb.rpc('create_order', { p_product_id: product.id, p_size: size });
+    if (error) throw new Error(error.message);
+    const order = data[0];
+    const base = location.href.replace(/[^/]*$/, '');
     const tossPayments = TossPayments(CLIENT_KEY);
-    const payment = tossPayments.payment({ customerKey: TossPayments.ANONYMOUS });
+    const payment = tossPayments.payment({ customerKey: me.id });
     await payment.requestPayment({
       method: 'CARD',
-      amount: { currency: 'KRW', value: salePrice(product) },
-      orderId,
-      orderName: `${product.brand} ${product.name} (${size})`,
+      amount: { currency: 'KRW', value: order.amount },
+      orderId: order.order_id,
+      orderName: order.order_name,
       successUrl: base + 'success.html',
       failUrl: base + 'fail.html',
       card: { useEscrow: false, flowMode: 'DEFAULT', useCardPoint: false, useAppCardOnly: false }
     });
   } catch (err) {
-    // 사용자가 결제창을 닫은 경우 등
+    // 사용자가 결제창을 닫은 경우 등 (주문은 '결제 대기'로 남음)
     if (err && err.code !== 'USER_CANCEL') alert(`결제 요청 실패: ${err.message || err}`);
+  } finally {
+    btn.disabled = false;
   }
 });
 
+/* ---------- 시작 ---------- */
+async function loadLikes() {
+  await ready;
+  if (!me) return;
+  const { data } = await sb.from('product_likes').select('product_id');
+  likedProducts = new Set((data || []).map((x) => x.product_id));
+  renderGrid();
+}
+
 renderGrid();
+loadLikes();

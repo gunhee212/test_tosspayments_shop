@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>마이 | STYLE STORE</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="top-banner">첫 구매 시 최대 20% 할인 · 무료배송</div>
+<header class="site">
+  <div class="wrap">
+    <div class="head-row">
+      <a class="logo" href="index.html">STYLE STORE</a>
+      <div class="search">브랜드, 상품, 스타일 검색</div>
+      <div class="head-icons" id="headIcons"></div>
+    </div>
+    <nav class="cat">
+      <a href="index.html">의류</a>
+      <a href="shoes.html">신발</a>
+      <a href="pants.html">바지</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap my">
+  <div class="page-head"><div><h1>마이 페이지</h1><p class="count" id="who"></p></div></div>
+
+  <h2>주문 내역</h2>
+  <section id="orders"><p class="empty">불러오는 중…</p></section>
+
+  <h2>좋아요한 상품</h2>
+  <section class="liked" id="liked"></section>
+</main>
+<footer class="site"><div class="wrap"><b>STYLE STORE</b><br>데모용 쇼핑몰입니다. 결제는 토스페이먼츠 테스트 모드로 진행되며 실제 청구되지 않습니다.</div></footer>
+
+<!-- 취소 / 리뷰 작성 공용 모달 -->
+<div class="dim" id="dim"></div>
+<aside class="sheet" id="modal">
+  <button class="sheet-close" id="modalClose" aria-label="닫기">×</button>
+  <h3 id="modalTitle"></h3>
+  <p class="modal-sub" id="modalSub"></p>
+  <div class="stars-input" id="starsRow" hidden></div>
+  <textarea id="modalText" rows="4" maxlength="1000"></textarea>
+  <p class="form-msg" id="modalMsg" role="alert"></p>
+  <button class="pay-btn" id="modalSubmit"></button>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/config.js"></script>
+<script src="js/common.js"></script>
+<script src="js/my.js"></script>
+</body>
+</html>
