@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>신발 | STYLE STORE</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-category="shoes">
+<div class="top-banner">첫 구매 시 최대 20% 할인 · 무료배송</div>
+<header class="site">
+  <div class="wrap">
+    <div class="head-row">
+      <a class="logo" href="index.html">STYLE STORE</a>
+      <div class="search">브랜드, 상품, 스타일 검색</div>
+      <div class="head-icons"><span>로그인</span><span>마이</span><span>장바구니</span></div>
+    </div>
+    <nav class="cat">
+      <a href="index.html" >의류</a>
+      <a href="shoes.html" class="active">신발</a>
+      <a href="pants.html" >바지</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  <div class="page-head">
+    <div><h1>신발</h1><p class="count" id="count"></p></div>
+    <div class="sort">
+      <button class="active" data-sort="popular">인기순</button>
+      <button data-sort="sale">할인율순</button>
+      <button data-sort="low">낮은 가격순</button>
+      <button data-sort="high">높은 가격순</button>
+    </div>
+  </div>
+  <div class="chips"><span>전체</span><span>신상</span><span>세일</span><span>무료배송</span><span>단독</span></div>
+  <section class="grid" id="grid"></section>
+</main>
+<footer class="site"><div class="wrap"><b>STYLE STORE</b><br>데모용 쇼핑몰입니다. 결제는 토스페이먼츠 테스트 모드로 진행되며 실제 청구되지 않습니다.</div></footer>
+
+<div class="dim" id="dim"></div>
+<aside class="sheet" id="sheet" aria-label="상품 구매">
+  <button class="sheet-close" id="sheetClose" aria-label="닫기">×</button>
+  <div class="sheet-top">
+    <div class="sheet-thumb" id="sheetThumb"><span id="sheetEmoji"></span></div>
+    <div class="sheet-meta">
+      <p class="brand" id="sheetBrand"></p>
+      <p class="name" id="sheetName"></p>
+      <p class="origin" id="sheetOrigin"></p>
+      <p class="price"><b class="off" id="sheetOff"></b><span id="sheetPrice"></span></p>
+    </div>
+  </div>
+  <h4>사이즈</h4>
+  <div class="sizes" id="sizes"></div>
+  <button class="pay-btn" id="payBtn" disabled>사이즈를 선택해주세요</button>
+  <p class="notice">토스페이먼츠 테스트 결제 · 실제 결제되지 않습니다</p>
+</aside>
+
+<script src="https://js.tosspayments.com/v2/standard"></script>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

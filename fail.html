@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>결제 실패 | STYLE STORE</title><link rel="stylesheet" href="css/style.css"></head>
+<body>
+<div class="result">
+  <div class="mark">⚠️</div>
+  <h1>결제에 실패했어요</h1>
+  <p class="sub" id="message"></p>
+  <dl>
+    <div><dt>에러 코드</dt><dd id="code"></dd></div>
+    <div><dt>주문번호</dt><dd id="orderId"></dd></div>
+  </dl>
+  <a class="btn" href="index.html">다시 시도하기</a>
+</div>
+<script>
+  const q = new URLSearchParams(location.search);
+  document.getElementById('message').textContent = q.get('message') || '알 수 없는 오류';
+  document.getElementById('code').textContent = q.get('code') || '-';
+  document.getElementById('orderId').textContent = q.get('orderId') || '-';
+</script>
+</body></html>
