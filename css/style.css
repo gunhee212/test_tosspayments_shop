@@ -38,8 +38,9 @@ nav.cat a.active { color: var(--black); border-color: var(--black); font-weight:
 .sort button.active { color: var(--black); font-weight: 700; }
 
 .chips { display: flex; gap: 8px; padding: 8px 0 20px; overflow-x: auto; }
-.chips span { flex: none; padding: 8px 14px; border: 1px solid var(--gray-2); border-radius: 18px; font-size: 13px; }
-.chips span:first-child { background: var(--black); color: #fff; border-color: var(--black); }
+.chips button { flex: none; padding: 8px 14px; border: 1px solid var(--gray-2); border-radius: 18px; font-size: 13px; background: #fff; color: inherit; cursor: pointer; font-family: inherit; }
+.chips button.on { background: var(--black); color: #fff; border-color: var(--black); }
+.gtag { margin-left: 4px; padding: 1px 5px; border-radius: 3px; background: var(--gray-1); color: #666; font-size: 10px; font-weight: 400; }
 
 /* 상품 그리드 */
 .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px 16px; padding-bottom: 80px; }

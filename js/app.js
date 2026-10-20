@@ -5,11 +5,12 @@ const sheet = document.getElementById('sheet');
 const dim = document.getElementById('dim');
 let current = null; // { product, size }
 let sort = 'popular';
+let gender = new URLSearchParams(location.search).get('gender') || 'all';
 let likedProducts = new Set();
 
 /* ---------- 목록 ---------- */
 function renderGrid() {
-  const list = [...PRODUCTS[category]];
+  const list = PRODUCTS[category].filter((p) => gender === 'all' || p.gender === gender);
   if (sort === 'low') list.sort((a, b) => salePrice(a) - salePrice(b));
   if (sort === 'high') list.sort((a, b) => salePrice(b) - salePrice(a));
   if (sort === 'sale') list.sort((a, b) => b.off - a.off);
@@ -24,7 +25,7 @@ function renderGrid() {
         <button class="heart${likedProducts.has(p.id) ? ' on' : ''}" aria-label="좋아요">${likedProducts.has(p.id) ? '♥' : '♡'}</button>
       </div>
       <div class="info">
-        <p class="brand">${p.brand}</p>
+        <p class="brand">${p.brand} <span class="gtag">${GENDERS[p.gender]}</span></p>
         <p class="name">${p.name}</p>
         <p class="price"><b class="off">${p.off}%</b> ${won(salePrice(p))}원</p>
       </div>
@@ -55,6 +56,18 @@ grid.addEventListener('click', async (e) => {
   if (card) openSheet(card.dataset.id);
 });
 
+document.querySelectorAll('#genderChips button').forEach((b) => {
+  b.classList.toggle('on', b.dataset.gender === gender);
+  b.addEventListener('click', () => {
+    gender = b.dataset.gender;
+    document.querySelectorAll('#genderChips button').forEach((x) => x.classList.toggle('on', x === b));
+    const u = new URL(location.href);
+    gender === 'all' ? u.searchParams.delete('gender') : u.searchParams.set('gender', gender);
+    history.replaceState(null, '', u);
+    renderGrid();
+  });
+});
+
 document.querySelectorAll('.sort button').forEach((b) =>
   b.addEventListener('click', () => {
     document.querySelectorAll('.sort button').forEach((x) => x.classList.remove('active'));
@@ -70,7 +83,7 @@ function openSheet(id) {
   current = { product: p, size: null };
   document.getElementById('sheetThumb').style.background = p.color;
   document.getElementById('sheetEmoji').innerHTML = imgTag(p);
-  document.getElementById('sheetBrand').textContent = p.brand;
+  document.getElementById('sheetBrand').textContent = p.brand + ' · ' + GENDERS[p.gender];
   document.getElementById('sheetName').textContent = p.name;
   document.getElementById('sheetOrigin').textContent = won(p.price) + '원';
   document.getElementById('sheetOff').textContent = p.off + '%';
