@@ -3,5 +3,5 @@
 const SUPABASE_URL = 'https://wguagqycggjqnvxjgktz.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_5ZOjEhPk4Ub3mcYmqTjMjw_wFki4AeX'; // publishable(anon) 키
 
-// 토스페이먼츠 결제창 SDK v2 클라이언트 키 (공용 테스트 키)
-const CLIENT_KEY = 'test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq';
+// 토스페이먼츠 결제창 SDK v2 클라이언트 키 (본인 상점 테스트 키)
+const CLIENT_KEY = 'test_ck_6bJXmgo28eBl2Nd4ZMnM3LAnGKWx';
