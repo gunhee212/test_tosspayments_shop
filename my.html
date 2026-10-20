@@ -12,7 +12,10 @@
   <div class="wrap">
     <div class="head-row">
       <a class="logo" href="index.html">STYLE STORE</a>
-      <div class="search">브랜드, 상품, 스타일 검색</div>
+      <form class="search" id="searchForm" role="search" action="search.html" autocomplete="off">
+        <input id="searchInput" name="q" type="search" placeholder="브랜드, 상품, 스타일 검색" aria-label="상품 검색">
+        <div class="suggest" id="suggest" hidden></div>
+      </form>
       <div class="head-icons" id="headIcons"></div>
     </div>
     <nav class="cat">
@@ -47,6 +50,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="js/data.js"></script>
+<script src="js/search.js"></script>
 <script src="js/config.js"></script>
 <script src="js/common.js"></script>
 <script src="js/my.js"></script>

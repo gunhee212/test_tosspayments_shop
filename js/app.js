@@ -215,3 +215,7 @@ async function loadLikes() {
 
 renderGrid();
 loadLikes();
+
+// 검색 결과·JSON-LD 링크(?open=id, #id)로 들어오면 해당 상품 구매 시트를 엽니다.
+const openId = new URLSearchParams(location.search).get('open') || location.hash.slice(1);
+if (openId && PRODUCTS[category].some((p) => p.id === openId)) openSheet(openId);

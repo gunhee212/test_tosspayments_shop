@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>검색 | STYLE STORE</title>
+<meta name="robots" content="noindex, follow">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="top-banner">첫 구매 시 최대 20% 할인 · 무료배송</div>
+<header class="site">
+  <div class="wrap">
+    <div class="head-row">
+      <a class="logo" href="index.html">STYLE STORE</a>
+      <form class="search" id="searchForm" role="search" action="search.html" autocomplete="off">
+        <input id="searchInput" name="q" type="search" placeholder="브랜드, 상품, 스타일 검색" aria-label="상품 검색">
+        <div class="suggest" id="suggest" hidden></div>
+      </form>
+      <div class="head-icons" id="headIcons"></div>
+    </div>
+    <nav class="cat">
+      <a href="index.html">의류</a>
+      <a href="shoes.html">신발</a>
+      <a href="pants.html">바지</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  <div class="page-head">
+    <div><h1 id="resultTitle">검색</h1><p class="count" id="resultCount"></p></div>
+  </div>
+  <section class="grid" id="results"></section>
+</main>
+<footer class="site"><div class="wrap"><b>STYLE STORE</b><br>데모용 쇼핑몰입니다. 결제는 토스페이먼츠 테스트 모드로 진행되며 실제 청구되지 않습니다.<br>상품 사진: <a href="https://unsplash.com" rel="noopener" target="_blank">Unsplash</a></div></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/search.js"></script>
+<script src="js/config.js"></script>
+<script src="js/common.js"></script>
+</body>
+</html>

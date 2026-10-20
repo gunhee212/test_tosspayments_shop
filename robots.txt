@@ -4,6 +4,7 @@ Disallow: /login.html
 Disallow: /my.html
 Disallow: /success.html
 Disallow: /fail.html
+Disallow: /search.html
 
 # AI 검색·답변 엔진 크롤러 허용
 User-agent: GPTBot

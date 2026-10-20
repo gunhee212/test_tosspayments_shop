@@ -165,3 +165,25 @@ footer.site b { color: #555; }
 .o-thumb { overflow: hidden; }
 .sheet-thumb { overflow: hidden; }
 .thumb .rank, .thumb .heart { z-index: 1; }
+
+/* 상품 검색 */
+.search { position: relative; }
+.search input { width: 100%; height: 100%; border: 0; background: transparent; font: inherit; color: var(--black); outline: none; }
+.search input::placeholder { color: var(--gray-3); }
+.search:focus-within { box-shadow: 0 0 0 2px var(--black) inset; }
+.suggest { position: absolute; left: 0; right: 0; top: 44px; background: #fff; border: 1px solid var(--gray-2); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,.12); padding: 6px; z-index: 30; max-height: 420px; overflow-y: auto; }
+.suggest[hidden] { display: none; }
+.suggest a { display: flex; gap: 10px; align-items: center; padding: 8px; border-radius: 8px; font-size: 13px; line-height: 1.45; color: var(--black); }
+.suggest a:hover, .suggest a.on { background: var(--gray-1); }
+.s-thumb { width: 40px; height: 52px; flex: none; overflow: hidden; border-radius: 4px; background: var(--gray-1); }
+.s-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.s-text em { font-style: normal; color: #888; font-size: 12px; margin-right: 4px; }
+.suggest .s-all { justify-content: center; font-weight: 700; color: #555; }
+.s-none { padding: 14px; font-size: 13px; color: #777; }
+.s-none.wide { grid-column: 1 / -1; padding: 40px 0; text-align: center; }
+a.card { display: block; color: inherit; }
+@media (max-width: 640px) {
+  .head-row { flex-wrap: wrap; height: auto; padding: 10px 0; }
+  .head-icons { display: flex; margin-left: auto; }
+  .search { display: flex; order: 3; flex-basis: 100%; max-width: none; }
+}
