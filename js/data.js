@@ -41,4 +41,7 @@ const CATEGORIES = {
 function salePrice(p) {
   return Math.floor((p.price * (100 - p.off)) / 100 / 100) * 100;
 }
+// 상품 이미지 (Unsplash 무료 사진, images/<id>.jpg)
+const imgSrc = (p) => `images/${p.id}.jpg`;
+const imgTag = (p) => `<img src="${imgSrc(p)}" alt="${p.brand} ${p.name}" loading="lazy" decoding="async">`;
 const won = (n) => n.toLocaleString('ko-KR');

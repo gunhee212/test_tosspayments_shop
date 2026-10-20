@@ -20,7 +20,7 @@ function renderGrid() {
     <article class="card" data-id="${p.id}">
       <div class="thumb" style="background:${p.color}">
         <span class="rank">${i + 1}</span>
-        <span class="emoji">${p.icon}</span>
+        ${imgTag(p)}
         <button class="heart${likedProducts.has(p.id) ? ' on' : ''}" aria-label="좋아요">${likedProducts.has(p.id) ? '♥' : '♡'}</button>
       </div>
       <div class="info">
@@ -69,7 +69,7 @@ function openSheet(id) {
   const p = PRODUCTS[category].find((x) => x.id === id);
   current = { product: p, size: null };
   document.getElementById('sheetThumb').style.background = p.color;
-  document.getElementById('sheetEmoji').textContent = p.icon;
+  document.getElementById('sheetEmoji').innerHTML = imgTag(p);
   document.getElementById('sheetBrand').textContent = p.brand;
   document.getElementById('sheetName').textContent = p.name;
   document.getElementById('sheetOrigin').textContent = won(p.price) + '원';

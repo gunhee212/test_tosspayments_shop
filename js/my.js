@@ -113,7 +113,7 @@ function orderCard(o) {
         ? `결제 ${fmtDate(o.paid_at)}`
         : '';
   return `<article class="order" data-id="${o.id}">
-    <div class="o-thumb" style="background:${p ? p.color : '#eee'}">${p ? p.icon : ''}</div>
+    <div class="o-thumb" style="background:${p ? p.color : '#eee'}">${p ? imgTag(p) : ''}</div>
     <div class="o-main">
       <p class="o-status s-${o.status}">${STATUS[o.status]}</p>
       <p class="o-name">${esc(label)}</p>
@@ -147,7 +147,7 @@ async function load() {
         .filter(Boolean)
         .map(
           (p) => `<a class="liked-item" href="${CATEGORIES[p.cat].href}">
-            <span class="o-thumb" style="background:${p.color}">${p.icon}</span>
+            <span class="o-thumb" style="background:${p.color}">${imgTag(p)}</span>
             <span><b>${esc(p.brand)}</b><br>${esc(p.name)}<br>${won(salePrice(p))}원</span></a>`
         )
         .join('')
