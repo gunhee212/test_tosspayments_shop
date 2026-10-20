@@ -152,3 +152,11 @@ footer.site b { color: #555; }
   .wrap { padding: 0 12px; }
   .sheet { max-width: none; }
 }
+
+/* SEO/AEO: FAQ, noscript 상품 목록 */
+.faq { margin: 56px 0 16px; border-top: 1px solid #eee; padding-top: 32px; }
+.faq h2 { font-size: 18px; margin: 0 0 12px; }
+.faq details { border-bottom: 1px solid #eee; padding: 14px 0; }
+.faq summary { cursor: pointer; font-weight: 600; font-size: 14px; }
+.faq p { margin: 10px 0 0; font-size: 13px; color: #666; line-height: 1.7; }
+.seo-list { padding-left: 18px; font-size: 13px; line-height: 1.8; }

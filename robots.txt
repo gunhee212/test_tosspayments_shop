@@ -1,0 +1,24 @@
+User-agent: *
+Allow: /
+Disallow: /login.html
+Disallow: /my.html
+Disallow: /success.html
+Disallow: /fail.html
+
+# AI 검색·답변 엔진 크롤러 허용
+User-agent: GPTBot
+Allow: /
+User-agent: OAI-SearchBot
+Allow: /
+User-agent: ChatGPT-User
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: Claude-SearchBot
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://testtosspaymentsshop-eight.vercel.app/sitemap.xml
