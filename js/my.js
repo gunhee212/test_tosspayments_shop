@@ -119,6 +119,7 @@ function orderCard(o) {
       <p class="o-name">${esc(label)}</p>
       <p class="o-meta">${won(o.amount)}원 · 주문 ${fmtDate(o.created_at)}</p>
       ${when ? `<p class="o-meta">${when}</p>` : ''}
+      ${o.ship_address ? `<p class="o-meta">배송지: ${esc(o.ship_name)} · ${esc(o.ship_phone)} · ${esc(o.ship_address)}${o.ship_memo ? ` (${esc(o.ship_memo)})` : ''}</p>` : ''}
       <p class="o-meta o-id">${esc(o.id)}</p>
     </div>
     <div class="o-actions">${actions}</div>

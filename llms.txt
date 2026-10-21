@@ -3,9 +3,9 @@
 > 의류, 신발, 바지를 할인가로 판매하는 온라인 패션 쇼핑몰 데모입니다. 결제는 토스페이먼츠 테스트 모드로 진행되며 실제 청구되지 않습니다.
 
 ## 카테고리
-- [옷](https://testtosspaymentsshop-eight.vercel.app/): STYLE STORE 남성·여성 의류 컬렉션. 반팔 티셔츠, 후드 집업, 셔츠, 스웨트셔츠, 코트, 바람막이, 가디건을 최대 35% 할인가로 만나보세요. 첫 구매 무료배송.
-- [신발](https://testtosspaymentsshop-eight.vercel.app/shoes.html): STYLE STORE 남성·여성 신발 컬렉션. 스니커즈, 러닝화, 하이탑, 트레킹 부츠, 로퍼, 슬립온, 샌들을 최대 30% 할인가로 만나보세요. 첫 구매 무료배송.
-- [바지](https://testtosspaymentsshop-eight.vercel.app/pants.html): STYLE STORE 남성·여성 바지 컬렉션. 와이드 데님, 슬랙스, 카고, 조거, 치노, 트랙 팬츠, 코듀로이 팬츠를 최대 30% 할인가로 만나보세요. 첫 구매 무료배송.
+- [옷](https://testtosspaymentsshop-eight.vercel.app/): STYLE STORE 남성·여성 의류 컬렉션. 반팔 티셔츠, 후드 집업, 셔츠, 스웨트셔츠, 코트, 바람막이, 가디건을 최대 35% 할인가로 만나보세요. 전 상품 무료배송.
+- [신발](https://testtosspaymentsshop-eight.vercel.app/shoes.html): STYLE STORE 남성·여성 신발 컬렉션. 스니커즈, 러닝화, 하이탑, 트레킹 부츠, 로퍼, 슬립온, 샌들을 최대 30% 할인가로 만나보세요. 전 상품 무료배송.
+- [바지](https://testtosspaymentsshop-eight.vercel.app/pants.html): STYLE STORE 남성·여성 바지 컬렉션. 와이드 데님, 슬랙스, 카고, 조거, 치노, 트랙 팬츠, 코듀로이 팬츠를 최대 30% 할인가로 만나보세요. 전 상품 무료배송.
 
 ## 상품 (판매가 = 정가에서 할인율 적용)
 ### 옷
@@ -63,6 +63,6 @@
 - [남성] DENIMARK 블랙 슬림 진: 53,300원 (정가 65,000원, 18% 할인, 사이즈 28/30/32/34)
 
 ## 안내
-- 첫 구매 시 최대 20% 할인, 무료배송
+- 전 상품 무료배송, 상품별 최대 35% 할인
 - 구매는 로그인 후 가능하며 결제는 토스페이먼츠 결제창을 사용합니다.
 - 주문 취소(환불)는 마이 페이지의 주문 내역에서 가능합니다.

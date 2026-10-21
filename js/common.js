@@ -18,9 +18,13 @@ async function loadMe() {
   return (me = { id: user.id, name: name || user.email });
 }
 
-function loginUrl() {
+// 로그인 후 지금 보던 화면으로 돌아오게 현재 쿼리를 함께 넘깁니다. params로 값을 덧붙이거나 바꿀 수 있습니다.
+function loginUrl(params = {}) {
   const here = location.pathname.split('/').pop() || 'index.html';
-  return 'login.html?next=' + encodeURIComponent(here);
+  const q = new URLSearchParams(location.search);
+  Object.entries(params).forEach(([k, v]) => q.set(k, v));
+  const qs = q.toString();
+  return 'login.html?next=' + encodeURIComponent(here + (qs ? '?' + qs : ''));
 }
 
 function renderHeader() {

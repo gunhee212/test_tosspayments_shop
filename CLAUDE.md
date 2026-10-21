@@ -43,7 +43,7 @@ node server.js          # http://localhost:3000 (PORT 환경변수로 포트 변
 
 ## Supabase 연동 구현 현황
 
-구현 완료: DB 스키마·RLS(`profiles/products/orders/reviews/review_likes/product_likes`), `create_order` RPC, Edge Function `confirm-payment`·`cancel-payment`, `login.html`/`my.html`/`success.html`, `js/common.js`(Supabase 클라이언트·헤더), `js/my.js`. 주문 상태 변경은 서버(service role)만 하고, 금액은 DB 상품 가격으로 계산합니다. **Edge Function secret `TOSS_SECRET_KEY`는 대시보드/CLI에서 직접 등록해야 합니다.** 상품·가격을 바꾸면 `js/data.js`와 DB `products`를 모두 고칩니다.
+구현 완료: DB 스키마·RLS(`profiles/products/orders/reviews/review_likes/product_likes`), `create_order` RPC, Edge Function `confirm-payment`·`cancel-payment`, `login.html`/`my.html`/`success.html`, `js/common.js`(Supabase 클라이언트·헤더), `js/my.js`. 주문 상태 변경은 서버(service role)만 하고, 금액은 DB 상품 가격으로 계산합니다. **Edge Function secret `TOSS_SECRET_KEY`는 대시보드/CLI에서 직접 등록해야 합니다.** 배송지(`orders.ship_*`, `profiles.address`)는 6인자 `create_order`가 검증·저장합니다. 옛 2인자 `create_order(text, text)`는 새 프런트 배포 전까지 쓰이므로 남겨 뒀고, 배포가 끝나면 새 마이그레이션으로 지워야 합니다. 상품·가격을 바꾸면 `js/data.js`와 DB `products`를 모두 고칩니다.
 
 ### 환경설정 파일
 

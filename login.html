@@ -23,7 +23,7 @@
   let mode = 'login';
   const q = new URLSearchParams(location.search);
   // 같은 사이트의 페이지로만 돌아가게 제한합니다.
-  const next = /^[\w-]+\.html$/.test(q.get('next') || '') ? q.get('next') : 'index.html';
+  const next = /^[\w-]+\.html(\?[\w%=&.+-]*)?$/.test(q.get('next') || '') ? q.get('next') : 'index.html';
   const $ = (id) => document.getElementById(id);
 
   document.querySelectorAll('.tabs button').forEach((b) =>

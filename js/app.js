@@ -20,7 +20,7 @@ function renderGrid() {
       (p, i) => `
     <article class="card" data-id="${p.id}">
       <div class="thumb" style="background:${p.color}">
-        <span class="rank">${i + 1}</span>
+        ${sort === 'popular' ? `<span class="rank">${i + 1}</span>` : ''}
         ${imgTag(p)}
         <button class="heart${likedProducts.has(p.id) ? ' on' : ''}" aria-label="좋아요">${likedProducts.has(p.id) ? '♥' : '♡'}</button>
       </div>
@@ -91,8 +91,7 @@ function openSheet(id) {
   document.getElementById('sizes').innerHTML = p.sizes
     .map((s) => `<button type="button" data-size="${s}">${s}</button>`)
     .join('');
-  document.getElementById('payBtn').textContent = '사이즈를 선택해주세요';
-  document.getElementById('payBtn').disabled = true;
+  updatePayBtn();
   loadReviews(p.id);
   sheet.classList.add('open');
   dim.classList.add('open');
@@ -108,15 +107,65 @@ dim.addEventListener('click', closeSheet);
 document.getElementById('sheetClose').addEventListener('click', closeSheet);
 document.addEventListener('keydown', (e) => e.key === 'Escape' && closeSheet());
 
+function selectSize(size) {
+  const b = [...document.querySelectorAll('#sizes button')].find((x) => x.dataset.size === size);
+  if (!b) return;
+  document.querySelectorAll('#sizes button').forEach((x) => x.classList.toggle('active', x === b));
+  current.size = size;
+  updatePayBtn();
+}
 document.getElementById('sizes').addEventListener('click', (e) => {
   const b = e.target.closest('button');
-  if (!b) return;
-  document.querySelectorAll('#sizes button').forEach((x) => x.classList.remove('active'));
-  b.classList.add('active');
-  current.size = b.dataset.size;
+  if (b) selectSize(b.dataset.size);
+});
+
+// 사이즈·로그인 상태에 따라 배송지 칸과 구매 버튼 문구를 맞춥니다.
+function updatePayBtn() {
   const btn = document.getElementById('payBtn');
-  btn.disabled = false;
-  btn.textContent = `${won(salePrice(current.product))}원 바로 구매하기`;
+  const chosen = current && current.size;
+  document.getElementById('shipBox').hidden = !(chosen && me);
+  btn.disabled = !chosen;
+  if (!chosen) btn.textContent = '사이즈를 선택해주세요';
+  else if (!me) btn.textContent = `로그인하고 ${won(salePrice(current.product))}원 구매하기`;
+  else btn.textContent = `${won(salePrice(current.product))}원 바로 구매하기`;
+}
+
+/* ---------- 배송지 ---------- */
+const shipEl = (k) => document.getElementById('ship' + k);
+let shipFilled = false;
+async function fillShipping() {
+  if (!me || shipFilled) return;
+  shipFilled = true;
+  const { data } = await sb.from('profiles').select('name, phone, address').eq('id', me.id).maybeSingle();
+  if (!shipEl('Name').value) shipEl('Name').value = data?.name || '';
+  if (!shipEl('Phone').value) shipEl('Phone').value = data?.phone || '';
+  if (!shipEl('Addr').value) shipEl('Addr').value = data?.address || '';
+}
+
+// 서버(create_order)와 같은 기준으로 먼저 확인합니다.
+function readShipping() {
+  const v = {
+    name: shipEl('Name').value.trim(),
+    phone: shipEl('Phone').value.replace(/[^0-9]/g, ''),
+    address: shipEl('Addr').value.trim(),
+    memo: shipEl('Memo').value.trim()
+  };
+  const bad =
+    (!v.name && ['Name', '받는 분 이름을 입력해주세요.']) ||
+    (!/^0\d{8,10}$/.test(v.phone) && ['Phone', '연락처를 숫자로 정확히 입력해주세요. (예: 010-1234-5678)']) ||
+    (v.address.length < 5 && ['Addr', '배송받을 주소를 입력해주세요.']);
+  document.querySelectorAll('.ship input').forEach((x) => x.classList.remove('bad'));
+  document.getElementById('shipMsg').textContent = bad ? bad[1] : '';
+  if (bad) {
+    shipEl(bad[0]).classList.add('bad');
+    shipEl(bad[0]).focus();
+    return null;
+  }
+  return v;
+}
+document.querySelector('.ship').addEventListener('input', (e) => {
+  e.target.classList.remove('bad');
+  document.getElementById('shipMsg').textContent = '';
 });
 
 /* ---------- 리뷰 ---------- */
@@ -169,7 +218,8 @@ document.getElementById('reviews').addEventListener('click', async (e) => {
 document.getElementById('payBtn').addEventListener('click', async () => {
   if (!current || !current.size) return;
   if (!me) {
-    location.href = loginUrl();
+    // 로그인 후 이 상품·사이즈가 고른 상태로 다시 열립니다.
+    location.href = loginUrl({ open: current.product.id, size: current.size });
     return;
   }
   if (location.protocol === 'file:') {
@@ -177,11 +227,20 @@ document.getElementById('payBtn').addEventListener('click', async () => {
     return;
   }
   const { product, size } = current;
+  const ship = readShipping();
+  if (!ship) return;
   const btn = document.getElementById('payBtn');
   btn.disabled = true;
   try {
     // 주문을 먼저 '결제 대기'로 저장합니다. 금액은 DB 가격으로 서버가 계산합니다.
-    const { data, error } = await sb.rpc('create_order', { p_product_id: product.id, p_size: size });
+    const { data, error } = await sb.rpc('create_order', {
+      p_product_id: product.id,
+      p_size: size,
+      p_ship_name: ship.name,
+      p_ship_phone: ship.phone,
+      p_ship_address: ship.address,
+      p_ship_memo: ship.memo
+    });
     if (error) throw new Error(error.message);
     const order = data[0];
     const base = location.href.replace(/[^/]*$/, '');
@@ -217,5 +276,18 @@ renderGrid();
 loadLikes();
 
 // 검색 결과·JSON-LD 링크(?open=id, #id)로 들어오면 해당 상품 구매 시트를 엽니다.
-const openId = new URLSearchParams(location.search).get('open') || location.hash.slice(1);
-if (openId && PRODUCTS[category].some((p) => p.id === openId)) openSheet(openId);
+// 로그인 후 돌아오면 ?size=로 고르던 사이즈도 다시 선택합니다.
+const startQ = new URLSearchParams(location.search);
+const openId = startQ.get('open') || location.hash.slice(1);
+if (openId && PRODUCTS[category].some((p) => p.id === openId)) {
+  openSheet(openId);
+  if (startQ.get('size')) selectSize(startQ.get('size'));
+}
+if (startQ.has('size')) {
+  startQ.delete('size');
+  history.replaceState(null, '', location.pathname + (startQ.toString() ? '?' + startQ : '') + location.hash);
+}
+ready.then(() => {
+  updatePayBtn();
+  fillShipping();
+});
