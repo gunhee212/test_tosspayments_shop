@@ -1,17 +1,51 @@
 // 상품 검색: 헤더 자동완성 + search.html 결과 (data.js 필요)
-const SEARCH_ALIAS = { M: '남성 남자 men man', W: '여성 여자 women woman' };
+// 성별 별칭은 단어가 정확히 같을 때만 맞춥니다. (부분 일치로 하면 "men"이 "women"에 걸립니다)
+const SEARCH_ALIAS = { M: ['남자', 'men', 'man', 'male'], W: ['여자', 'women', 'woman', 'female'] };
+
+// 같은 뜻으로 보는 검색어 묶음. 한 단어를 입력하면 묶음 안의 어느 말이 들어 있어도 찾습니다.
+const SEARCH_SYNONYMS = [
+  ['청바지', '데님 팬츠', '진', 'jeans'],
+  ['데님', 'denim'],
+  ['반바지', '쇼츠', 'shorts'],
+  ['운동화', '스니커즈', '스니커스', '스니커', 'sneakers', 'sneaker', '러닝화', '워커'],
+  ['재킷', '자켓', 'jacket'],
+  ['카디건', '가디건', 'cardigan'],
+  ['후디', '후드', 'hood', 'hoodie'],
+  ['티셔츠', '반팔 티', '긴팔 티', 'tshirt', 't-shirt', 'tee'],
+  ['셔츠', '남방', 'shirt'],
+  ['구두', '로퍼', '더비', 'loafer'],
+  ['부츠', 'boots', 'boot'],
+  ['샌들', '슬리퍼', '슬라이드', 'sandal'],
+  ['원피스', '드레스', 'dress'],
+  ['코트', 'coat'],
+  ['바람막이', '윈드브레이커', 'windbreaker'],
+  ['슬랙스', '정장바지', 'slacks'],
+  ['바지', '팬츠', 'pants'],
+  ['신발', '슈즈', 'shoes'],
+  ['옷', '의류', '상의', 'clothes'],
+  ['아카이브', 'archive'],
+  ['노웨어', 'nowhere'],
+  ['모노', 'mono'],
+  ['어반랩', '어반 랩', 'urban lab'],
+  ['스트라이드', 'stride'],
+  ['트렉', '트랙', 'trek'],
+  ['로퍼코', 'loafer co'],
+  ['데니마크', 'denimark']
+];
 
 function allProducts() {
   return Object.entries(PRODUCTS).flatMap(([cat, list]) => list.map((p) => ({ ...p, cat })));
 }
+
+const expandWord = (w) => SEARCH_SYNONYMS.find((g) => g.includes(w)) || [w];
 
 // 공백으로 나눈 단어가 모두 (브랜드·상품명·카테고리·성별) 어딘가에 포함된 상품을 찾습니다.
 function searchProducts(q) {
   const words = q.toLowerCase().split(/\s+/).filter(Boolean);
   if (!words.length) return [];
   return allProducts().filter((p) => {
-    const hay = `${p.brand} ${p.name} ${CATEGORIES[p.cat].label} ${CATEGORIES[p.cat].title} ${GENDERS[p.gender]} ${SEARCH_ALIAS[p.gender]}`.toLowerCase();
-    return words.every((w) => hay.includes(w));
+    const hay = `${p.brand} ${p.name} ${CATEGORIES[p.cat].label} ${CATEGORIES[p.cat].title} ${GENDERS[p.gender]}`.toLowerCase();
+    return words.every((w) => SEARCH_ALIAS[p.gender].includes(w) || expandWord(w).some((s) => hay.includes(s)));
   });
 }
 

@@ -30,16 +30,19 @@ node server.js          # http://localhost:3000 (PORT 환경변수로 포트 변
 - `success.html` / `fail.html`: 토스가 리다이렉트할 때 붙여주는 쿼리스트링(`orderId`, `amount`, `paymentKey` / `code`, `message`)을 화면에 보여주기만 합니다.
 - `css/style.css`: 전체 공용 스타일 하나. 반응형 기준은 900px, 640px입니다.
 
-### 결제 흐름과 한계
+### 결제 흐름
 
-`app.js`가 `TossPayments(CLIENT_KEY).payment({ customerKey: TossPayments.ANONYMOUS })`로 결제창을 띄웁니다. `successUrl`/`failUrl`은 `location.href`에서 현재 디렉터리를 뽑아 `success.html`/`fail.html`을 붙여 만들기 때문에, 배포 주소가 바뀌어도 코드를 고칠 필요가 없습니다. `orderId`는 클라이언트에서 `ORD-<timestamp>-<random>`으로 만듭니다.
+`app.js`가 `create_order` RPC로 주문(금액은 DB 가격으로 서버가 계산)을 만든 뒤 `TossPayments(CLIENT_KEY).payment({ customerKey: me.id })`로 결제창을 띄웁니다. `successUrl`/`failUrl`은 `location.href`의 현재 디렉터리에 `success.html`/`fail.html`을 붙여 만듭니다. 승인은 `success.html`(js/success.js)이 Edge Function `confirm-payment`를 불러 서버에서 하고, 취소는 `cancel-payment`가 합니다.
 
-**결제 승인(`POST https://api.tosspayments.com/v1/payments/confirm`)은 구현돼 있지 않습니다.** 현재는 결제 인증까지만 되고 실제 승인은 일어나지 않습니다. 승인을 붙일 때는 다음을 지켜야 합니다.
+- 시크릿 키(`test_sk_*`, `live_sk_*`)는 Edge Function secrets에만 두고, 브라우저 코드에는 클라이언트 키(`test_ck_*`)만 둡니다. 지금 `CLIENT_KEY`는 토스 공용 테스트 키라 실서비스 전에 본인 상점 키로 바꿔야 합니다.
+- `api.tosspayments.com`은 브라우저에서 직접 부르지 않습니다.
 
-- 시크릿 키(`test_sk_*`, `live_sk_*`)는 서버 코드에서만 읽고, `NEXT_PUBLIC_`, `VITE_` 같은 공개 접두어 환경변수에 넣지 않습니다.
-- `api.tosspayments.com`은 브라우저에서 직접 호출하지 않고 가맹점 서버(API 라우트)가 대신 호출합니다.
-- 브라우저 코드에는 클라이언트 키(`test_ck_*`)만 둡니다. 지금 `CLIENT_KEY`는 토스 공용 테스트 키이므로 실서비스 전에 본인 상점 키로 교체해야 합니다.
-- 금액은 서버에서 상품 정보로 다시 계산해 검증해야 합니다. 지금은 금액을 클라이언트의 `salePrice()`로만 정합니다.
+### 배포 보안 설정
+
+- `vercel.json`이 CSP·X-Frame-Options 등 보안 헤더를 붙입니다. 외부 스크립트·폰트·API 도메인을 새로 쓰면 CSP에 추가해야 막히지 않습니다. 그래서 HTML에 인라인 `<script>`를 두지 않고 `js/*.js`로 뺍니다(JSON-LD는 예외).
+- `supabase-js` CDN 스크립트에는 SRI(`integrity`)가 있어서 버전을 바꾸면 해시도 다시 계산해야 합니다.
+- `.vercelignore`로 `supabase/`, `server.js`, `*.md`, `promo/` 등을 배포에서 뺍니다.
+- DB 테이블 권한은 RLS 정책과 같은 범위만 남겼습니다(`20261021000003_tighten_table_grants.sql`). 새 테이블·쓰기 기능을 추가하면 정책과 함께 GRANT도 추가해야 합니다.
 
 ## Supabase 연동 구현 현황
 
@@ -71,7 +74,7 @@ node server.js          # http://localhost:3000 (PORT 환경변수로 포트 변
 - 상품은 카테고리당 16개(남 8·여 8)이고 `gender: 'M'|'W'` 필드가 있습니다(`GENDERS`로 표시명). 각 목록 상단의 전체/남성/여성 버튼이 `?gender=`로 필터합니다.
 - 이미지는 `images/<상품id>.jpg`(720×960, Unsplash 무료 사진)이고 `data.js`의 `imgTag(p)`로 그립니다. 이모지는 더 이상 화면에 쓰지 않습니다(`icon`은 데이터에만 남음).
 - **상품을 추가·수정하면 네 곳을 같이 맞춥니다:** `js/data.js`, `images/<id>.jpg`, DB `products`(새 `supabase/migrations/` 파일 + 적용), 그리고 아래 SEO 정적 산출물.
-- 검색: `js/search.js`(헤더 자동완성 + `search.html` 결과). 결과 클릭은 `카테고리.html?open=<id>`(또는 `#<id>`)로 구매 시트를 엽니다. `search.html`은 `noindex`입니다.
+- 검색: `js/search.js`(헤더 자동완성 + `search.html` 결과). 결과 클릭은 `카테고리.html?open=<id>`(또는 `#<id>`)로 구매 시트를 엽니다. 목록에서 시트를 열 때도 `?open=` 기록을 쌓아 뒤로가기로 닫히고, 정렬은 `?sort=`로 남습니다. 동의어는 `SEARCH_SYNONYMS`, 성별 별칭은 정확히 같은 단어만 맞춥니다. `search.html`은 `noindex`입니다.
 
 ## SEO / AEO / GEO
 

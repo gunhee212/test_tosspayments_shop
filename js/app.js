@@ -61,25 +61,42 @@ document.querySelectorAll('#genderChips button').forEach((b) => {
   b.addEventListener('click', () => {
     gender = b.dataset.gender;
     document.querySelectorAll('#genderChips button').forEach((x) => x.classList.toggle('on', x === b));
-    const u = new URL(location.href);
-    gender === 'all' ? u.searchParams.delete('gender') : u.searchParams.set('gender', gender);
-    history.replaceState(null, '', u);
+    setParam('gender', gender === 'all' ? null : gender);
     renderGrid();
   });
 });
 
-document.querySelectorAll('.sort button').forEach((b) =>
+// 쿼리 하나를 바꿔 현재 기록을 갱신합니다(null이면 지움). 뒤로가기 기록은 늘리지 않습니다.
+function setParam(key, value) {
+  const u = new URL(location.href);
+  value == null ? u.searchParams.delete(key) : u.searchParams.set(key, value);
+  history.replaceState(history.state, '', u);
+}
+
+// 정렬도 URL(?sort=)에 남겨서 상품을 보고 돌아와도 유지합니다.
+const SORTS = ['popular', 'sale', 'low', 'high'];
+const sortParam = new URLSearchParams(location.search).get('sort');
+if (SORTS.includes(sortParam)) sort = sortParam;
+document.querySelectorAll('.sort button').forEach((b) => {
+  b.classList.toggle('active', b.dataset.sort === sort);
   b.addEventListener('click', () => {
-    document.querySelectorAll('.sort button').forEach((x) => x.classList.remove('active'));
-    b.classList.add('active');
+    document.querySelectorAll('.sort button').forEach((x) => x.classList.toggle('active', x === b));
     sort = b.dataset.sort;
+    setParam('sort', sort === 'popular' ? null : sort);
     renderGrid();
-  })
-);
+  });
+});
 
 /* ---------- 구매 시트 ---------- */
-function openSheet(id) {
+// 시트를 열면 ?open=id 기록을 하나 쌓아서, 모바일 뒤로가기가 페이지 이동 대신 시트를 닫게 합니다.
+function openSheet(id, { push = true } = {}) {
   const p = PRODUCTS[category].find((x) => x.id === id);
+  if (push && new URLSearchParams(location.search).get('open') !== id) {
+    const u = new URL(location.href);
+    u.searchParams.set('open', id);
+    u.hash = '';
+    history.pushState({ sheet: id }, '', u);
+  }
   current = { product: p, size: null };
   document.getElementById('sheetThumb').style.background = p.color;
   document.getElementById('sheetEmoji').innerHTML = imgTag(p);
@@ -98,11 +115,26 @@ function openSheet(id) {
   document.body.classList.add('lock');
 }
 
-function closeSheet() {
+function hideSheet() {
   sheet.classList.remove('open');
   dim.classList.remove('open');
   document.body.classList.remove('lock');
 }
+
+// 직접 열어 쌓은 기록이면 뒤로 돌아가고(popstate에서 닫힘), 링크로 바로 들어왔으면 ?open만 지웁니다.
+function closeSheet() {
+  if (!sheet.classList.contains('open')) return;
+  if (history.state && history.state.sheet) return history.back();
+  hideSheet();
+  setParam('open', null);
+  if (location.hash) history.replaceState(history.state, '', location.pathname + location.search);
+}
+
+window.addEventListener('popstate', () => {
+  const id = new URLSearchParams(location.search).get('open');
+  if (id && PRODUCTS[category].some((p) => p.id === id)) openSheet(id, { push: false });
+  else hideSheet();
+});
 dim.addEventListener('click', closeSheet);
 document.getElementById('sheetClose').addEventListener('click', closeSheet);
 document.addEventListener('keydown', (e) => e.key === 'Escape' && closeSheet());
@@ -280,7 +312,7 @@ loadLikes();
 const startQ = new URLSearchParams(location.search);
 const openId = startQ.get('open') || location.hash.slice(1);
 if (openId && PRODUCTS[category].some((p) => p.id === openId)) {
-  openSheet(openId);
+  openSheet(openId, { push: false });
   if (startQ.get('size')) selectSize(startQ.get('size'));
 }
 if (startQ.has('size')) {

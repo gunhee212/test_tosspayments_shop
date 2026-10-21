@@ -1,0 +1,8 @@
+# 배포 사이트에 올리지 않을 파일 (서버 코드·DB 스키마·문서·로컬 도구)
+supabase/
+server.js
+serve.ps1
+*.md
+.mcp.json
+.env.example
+promo/
