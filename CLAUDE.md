@@ -65,3 +65,23 @@ node server.js          # http://localhost:3000 (PORT 환경변수로 포트 변
 
 - `serve.ps1`은 Node 설치 전에 쓰던 PowerShell 서버로, 지금은 쓰지 않으며 gitignore 처리돼 있습니다.
 - 이 저장소의 코드 주석과 UI 문구는 한국어입니다.
+
+## 상품 데이터·이미지·검색 (추가 기능)
+
+- 상품은 카테고리당 16개(남 8·여 8)이고 `gender: 'M'|'W'` 필드가 있습니다(`GENDERS`로 표시명). 각 목록 상단의 전체/남성/여성 버튼이 `?gender=`로 필터합니다.
+- 이미지는 `images/<상품id>.jpg`(720×960, Unsplash 무료 사진)이고 `data.js`의 `imgTag(p)`로 그립니다. 이모지는 더 이상 화면에 쓰지 않습니다(`icon`은 데이터에만 남음).
+- **상품을 추가·수정하면 네 곳을 같이 맞춥니다:** `js/data.js`, `images/<id>.jpg`, DB `products`(새 `supabase/migrations/` 파일 + 적용), 그리고 아래 SEO 정적 산출물.
+- 검색: `js/search.js`(헤더 자동완성 + `search.html` 결과). 결과 클릭은 `카테고리.html?open=<id>`(또는 `#<id>`)로 구매 시트를 엽니다. `search.html`은 `noindex`입니다.
+
+## SEO / AEO / GEO
+
+- 배포: Vercel(`https://testtosspaymentsshop-eight.vercel.app`)이 `main` 푸시로 자동 배포되고, 반영까지 보통 30~60초 걸립니다.
+- 세 카테고리 페이지의 `<!-- seo:start -->…<!-- seo:end -->`(메타·OG·JSON-LD)와 `<!-- seo-body:start -->…<!-- seo-body:end -->`(FAQ·noscript 목록)는 `data.js`로 **생성한 정적 값**입니다. 가격·상품이 바뀌면 다시 생성해야 합니다. `robots.txt`, `sitemap.xml`, `llms.txt`도 마찬가지입니다.
+- 생성 스크립트는 저장소에 없습니다(세션 스크래치패드에 있었음). 다시 생성하려면 새로 짜거나 `scripts/`에 넣어 두세요.
+- `index.html`의 `google-site-verification` 메타태그를 지우면 Search Console 소유권이 풀립니다. Search Console에는 이 사이트가 URL 접두어 속성으로 등록돼 있고 `sitemap.xml`이 제출돼 있습니다. "색인 생성 요청"은 하루 할당량이 있습니다.
+
+## 로컬 작업 팁 (Windows)
+
+- `node server.js`를 Bash 백그라운드로 띄웠다면 끝난 뒤 `taskkill //F //IM node.exe`로 정리합니다.
+- 커밋 때 나오는 `LF will be replaced by CRLF` 경고는 무시해도 됩니다.
+- 이미지 `loading="lazy"` 때문에 스크린샷이 회색 칸으로 찍힐 수 있으니, 이미지 검증은 `naturalWidth`로 확인합니다.
